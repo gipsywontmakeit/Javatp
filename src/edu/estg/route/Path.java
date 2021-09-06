@@ -29,4 +29,30 @@ public class Path implements IPath {
     public int getDuration() {
         return this.duration;
     }
+
+    @Override
+    public String toString() {
+        return "Path{" +
+                "to=" + binId +
+                ", distance=" + distance +
+                ", duration=" + duration +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof IPath)) {
+            return false;
+        }
+
+        Path path = (Path) o;
+
+        return path.getTo().equals(this.binId) &&
+                path.getDistance() == this.distance &&
+                path.getDuration() == this.duration;
+    }
 }

@@ -1,11 +1,13 @@
 package edu.estg.json;
 
 import edu.estg.container.Container;
+import edu.estg.container.Measurement;
 import edu.estg.container.RecyclingBin;
 import edu.estg.route.GeographicCoordinates;
 import edu.maen.core.enumerations.WasteType;
 import edu.maen.core.exceptions.CityException;
 import edu.maen.core.exceptions.ContainerException;
+import edu.maen.core.exceptions.MeasurementException;
 import edu.maen.core.exceptions.RecyclingBinException;
 import edu.maen.core.interfaces.ICity;
 import edu.maen.io.interfaces.IImporter;
@@ -16,6 +18,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class Importer implements IImporter {
 
@@ -25,43 +28,6 @@ public class Importer implements IImporter {
             JSONObject jsonObject = (JSONObject) o;
 
             if (!(jsonObject.containsKey("to") && jsonObject.containsKey("from"))) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private boolean isBinsFile(JSONArray jsonArray) {
-
-        for (Object o : jsonArray) {
-            JSONObject jsonObject = (JSONObject) o;
-
-            boolean jsonOk = jsonObject.containsKey("Codigo") &
-                    jsonObject.containsKey("Ref. Localização") &
-                    jsonObject.containsKey("Zona") &
-                    jsonObject.containsKey("Latitude") &
-                    jsonObject.containsKey("Longitude") &
-                    jsonObject.containsKey("Contentores");
-
-            if (!jsonOk) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private boolean isReadingsFile(JSONArray jsonArray) {
-
-        for (Object o : jsonArray) {
-            JSONObject jsonObject = (JSONObject) o;
-
-            boolean jsonOk = jsonObject.containsKey("contentor") &
-                    jsonObject.containsKey("data") &
-                    jsonObject.containsKey("valor");
-
-            if (!jsonOk) {
                 return false;
             }
         }
@@ -140,8 +106,33 @@ public class Importer implements IImporter {
     }
 
 
-    private void importReadings() {
+    private boolean importMeasurements(ICity city, JSONArray readingData) throws ContainerException, MeasurementException {
+        for (Object o : readingData) {
+            JSONObject jsonObject = (JSONObject) o;
 
+            // ISO8601 -> estudar bem sobre isto
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+            LocalDateTime dateTime = LocalDateTime.parse(
+                    jsonObject.get("data").toString(),
+                    formatter
+            );
+
+            String containerId = jsonObject.get("contentor").toString();
+
+            Container dummyContainer = new Container(containerId);
+
+            Measurement measurement = new Measurement(
+                    jsonObject.get("contentor").toString(),
+                    dateTime,
+                    Double.parseDouble(jsonObject.get("valor").toString())
+            );
+
+            if (!(city.addMeasurement(measurement, dummyContainer))) {
+                throw new MeasurementException("Cannot Add Measurement -> " + dummyContainer.getCode());
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -183,6 +174,6 @@ public class Importer implements IImporter {
 
     @Override
     public void report(String s) throws IOException {
-
+//comments
     }
 }

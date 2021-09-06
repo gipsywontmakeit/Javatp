@@ -1,5 +1,6 @@
 package edu.estg.container;
 
+import edu.estg.route.Path;
 import edu.maen.core.enumerations.WasteType;
 import edu.maen.core.exceptions.ContainerException;
 import edu.maen.core.exceptions.RecyclingBinException;
@@ -135,6 +136,21 @@ public class RecyclingBin implements IRecyclingBin {
         return false;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof IRecyclingBin)) {
+            return false;
+        }
+
+        RecyclingBin recyclingBin = (RecyclingBin) o;
+
+        return recyclingBin.code.equals(this.code);
+    }
+
     private void expandContainerArray() {
         // Passo 1 Criar um novo array
         IContainer[] resizedArray = new IContainer[containerSize *= 2];
@@ -174,13 +190,24 @@ public class RecyclingBin implements IRecyclingBin {
         return false;
     }
 
-    public boolean verifyAddPath(IPath path) {
-        for (int i = 0; i < paths.length; i++) {
-            if (paths[i].equals(path)) {
-                return false;
-            }
+    private void expandPathArray() {
+        IPath[] resizedArray = new IPath[this.pathSize *= 2];
+
+        for (int i = 0; i < this.pathIndex; i++) {
+            resizedArray[i] = this.paths[i];
         }
-        return true;
+
+        this.paths = resizedArray;
+    }
+
+    public boolean pathExists(IPath iPath) {
+
+
+        for (int i = 0; i < this.pathIndex; i++) {
+            if (this.paths[i].
+        }
+
+
     }
 
 }

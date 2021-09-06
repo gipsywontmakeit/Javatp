@@ -1,14 +1,16 @@
 package edu.estg.route;
 
+import edu.estg.container.Container;
 import edu.estg.container.RecyclingBin;
 import edu.maen.core.enumerations.WasteType;
-import edu.maen.core.exceptions.ContainerException;
 import edu.maen.core.exceptions.MeasurementException;
 import edu.maen.core.exceptions.RecyclingBinException;
 import edu.maen.core.interfaces.ICity;
 import edu.maen.core.interfaces.IContainer;
 import edu.maen.core.interfaces.IMeasurement;
 import edu.maen.core.interfaces.IRecyclingBin;
+
+import java.util.Arrays;
 
 public class City implements ICity {
 
@@ -106,7 +108,19 @@ public class City implements ICity {
         return null;
     }
 
-    public void addRecyclingBinArray () {
+    @Override
+    public String toString() {
+        return "City{" +
+                "name='" + name + '\'' +
+                ", bins=" + Arrays.toString(bins) +
+                ", binsSize=" + binsSize +
+                ", binsIndex=" + binsIndex +
+                '}';
+    }
+
+    // TODO Para Apagar depois
+    // Linha 166 DummyContainer Importer.java
+    public IContainer findContainerById(String containerId) {
 
         IRecyclingBin[] tempArray = new IRecyclingBin[binCont + 10];
 

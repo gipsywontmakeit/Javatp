@@ -1,5 +1,7 @@
 package edu.estg.route;
 
+import edu.maen.core.enumerations.WasteType;
+import edu.maen.core.interfaces.IContainer;
 import edu.maen.core.interfaces.IRecyclingBin;
 import edu.maen.core.interfaces.IRoute;
 
@@ -16,8 +18,10 @@ public class Route implements IRoute {
     }
 
     @Override
-    public IRecyclingBin[] getRoute(double v, double v1, double v2, double v3) {
-        return new IRecyclingBin[0];
+    public IRecyclingBin[] getRoute(double v, double v1, double v2, double v3)
+
+
+    return new IRecyclingBin[0];
     }
 
     @Override
@@ -34,4 +38,19 @@ public class Route implements IRoute {
     public String export() throws IOException {
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Route{" +
+                "totalDistance=" + totalDistance +
+                ", totalDuration=" + totalDuration +
+                '}';
+    }
+
+    public boolean routeManagement (IRoute iRoute, IContainer iContainer, IRecyclingBin iRecyclingBin, WasteType wasteType) {
+
+
+
+    }
+
 }
