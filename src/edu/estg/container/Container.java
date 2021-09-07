@@ -22,6 +22,7 @@ public class Container implements IContainerWithMeasurements {
         this.code = code;
         this.capacity = capacity;
         this.type = type;
+        this.measurements = new IMeasurement[this.measurementSize];
     }
 
     @Override

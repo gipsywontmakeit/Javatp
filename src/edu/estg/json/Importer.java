@@ -25,17 +25,34 @@ import java.time.format.DateTimeFormatter;
 
 public class Importer implements IImporter {
 
-    private boolean isDistancesFile(JSONArray jsonArray) {
+    private FileType detectFileType(JSONArray jsonArray) {
 
         for (Object o : jsonArray) {
             JSONObject jsonObject = (JSONObject) o;
 
-            if (!(jsonObject.containsKey("to") && jsonObject.containsKey("from"))) {
-                return false;
+            if (jsonObject.containsKey("to") && jsonObject.containsKey("from")) {
+                return FileType.DISTANCES_FILE;
+            }
+
+            if (jsonObject.containsKey("contentor") &
+                    jsonObject.containsKey("data") &
+                    jsonObject.containsKey("valor")
+            ) {
+                return FileType.MEASUREMENTS_FILE;
+            }
+
+            if (jsonObject.containsKey("Codigo") &
+                    jsonObject.containsKey("Ref. Localização") &
+                    jsonObject.containsKey("Zona") &
+                    jsonObject.containsKey("Latitude") &
+                    jsonObject.containsKey("Longitude") &
+                    jsonObject.containsKey("Contentores")
+            ) {
+                return FileType.BINS_FILE;
             }
         }
 
-        return true;
+        return FileType.UNDETECTED;
     }
 
     /**
@@ -58,11 +75,52 @@ public class Importer implements IImporter {
         return null;
     }
 
-    private void importDistances() {
+    private boolean importDistances(ICity city, JSONArray binData) throws RecyclingBinException {
+        for (Object o : binData) {
+            JSONObject jsonObject = (JSONObject) o;
 
+            JSONArray binsArray = (JSONArray) jsonObject.get("to");
+
+            RecyclingBin dummyBin = new RecyclingBin(jsonObject.get("from").toString());
+            for (IRecyclingBin iBin : city.getRecyclingBin()) {
+                if (iBin == null) {
+                    continue;
+                }
+
+                RecyclingBin bin = (RecyclingBin) iBin;
+                if (bin.equals(dummyBin)) {
+
+                    for (Object binObject : binsArray) {
+                        JSONObject jsonBinObject = (JSONObject) binObject;
+
+                        if (!(jsonBinObject.containsKey("name") &&
+                                jsonBinObject.containsKey("distance") &&
+                                jsonBinObject.containsKey("duration"))
+                        ) {
+                            throw new RecyclingBinException("Invalid parameters");
+                        }
+
+                        RecyclingBin dummyDestinationBin = new RecyclingBin(jsonBinObject.get("name").toString());
+
+                        Path path = new Path(
+                                dummyDestinationBin,
+                                Integer.parseInt(jsonBinObject.get("distance").toString()),
+                                Integer.parseInt(jsonBinObject.get("duration").toString())
+
+                        );
+
+                        if (!bin.addPath(path)) {
+                            throw new RecyclingBinException("Path cannot be added!");
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
-    private void importBins(ICity city, JSONArray binData) throws RecyclingBinException, ContainerException {
+    private boolean importBins(ICity city, JSONArray binData) throws RecyclingBinException, ContainerException {
         for (Object o : binData) {
             JSONObject jsonObject = (JSONObject) o;
 
@@ -100,12 +158,17 @@ public class Importer implements IImporter {
                         assignWasteType(containerCode)
                 );
 
-                bin.addContainer(binContainer);
+                if (!bin.addContainer(binContainer)) {
+                    throw new ContainerException("Cannot add container");
+                }
             }
 
-
-            city.addRecyclingBin(bin);
+            if (!city.addRecyclingBin(bin)) {
+                throw new RecyclingBinException("Cannot add bin");
+            }
         }
+
+        return true;
     }
 
 
@@ -149,34 +212,43 @@ public class Importer implements IImporter {
             throw new IOException("Invalid file type!");
         }
 
-        JSONParser parser = new JSONParser();
-
         // Passar o ficheiro Json para um JsonArray
+        JSONParser parser = new JSONParser();
         JSONArray jsonArray;
         try {
             jsonArray = (JSONArray) parser.parse(new FileReader(path));
         } catch (ParseException e) {
             throw new IOException("Cannot read the file");
         }
-        System.out.println(jsonArray);
 
-
-        if (isBinsFile(jsonArray)) {
-            try {
-                importBins(city, jsonArray);
-            } catch (RecyclingBinException | ContainerException e) {
-                throw new IOException(e.toString());
-            }
-        } else if (isDistancesFile(jsonArray)) {
-            importDistances();
-        } else if (isReadingsFile(jsonArray)) {
-            importReadings();
+        switch (detectFileType(jsonArray)) {
+            case BINS_FILE:
+                try {
+                    boolean imported = importBins(city, jsonArray);
+                } catch (RecyclingBinException | ContainerException e) {
+                    throw new IOException(e.toString());
+                }
+                break;
+            case DISTANCES_FILE:
+                try {
+                    boolean imported = importDistances(city, jsonArray);
+                } catch (RecyclingBinException e) {
+                    throw new IOException(e.toString());
+                }
+                break;
+            case MEASUREMENTS_FILE:
+                try {
+                    boolean imported = importMeasurements(city, jsonArray);
+                } catch (ContainerException | MeasurementException e) {
+                    throw new IOException(e.toString());
+                }
+                break;
+            case UNDETECTED:
+                throw new IOException("Invalid File");
         }
-
     }
 
     @Override
     public void report(String s) throws IOException {
-//comments
     }
 }

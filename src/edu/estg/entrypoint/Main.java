@@ -36,10 +36,15 @@ public class Main {
             throw new Exception(e.toString());
         }
 
-
         try {
             jsonImporter.importData(city, "D:\\Javatp\\resources\\leituras.json");
         } catch (IOException | CityException e) {
+            throw new Exception(e.toString());
+        }
+
+        try {
+            jsonImporter.importData(city, "D:\\Javatp\\resources\\distances.json");
+        }catch (IOException | CityException e) {
             throw new Exception(e.toString());
         }
 
@@ -47,6 +52,12 @@ public class Main {
             if (iBin != null) {
                 RecyclingBin bin = (RecyclingBin) iBin;
                 System.out.println("|-" + bin);
+
+                for (IPath path : bin.paths) {
+                    if (path != null) {
+                        System.out.println(path);
+                    }
+                }
 
                 for (IContainer iContainer : bin.getContainers()) {
                     if (iContainer != null) {

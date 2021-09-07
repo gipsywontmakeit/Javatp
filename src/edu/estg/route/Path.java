@@ -1,16 +1,27 @@
 package edu.estg.route;
 
+import edu.estg.container.RecyclingBin;
+import edu.maen.core.exceptions.RecyclingBinException;
 import edu.maen.core.interfaces.IPath;
 import edu.maen.core.interfaces.IRecyclingBin;
 
 public class Path implements IPath {
 
-    private IRecyclingBin to;
-    private int distance;
-    private int duration;
+    private final RecyclingBin bin;
+    private final int distance;
+    private final int duration;
 
-    public Path(IRecyclingBin to, int distance, int duration) {
-        this.to = to;
+    public Path(IRecyclingBin iBin, int distance, int duration) throws RecyclingBinException {
+
+        if (iBin == null) {
+            throw new RecyclingBinException("Bin is null");
+        }
+
+        if (!(iBin instanceof RecyclingBin)) {
+            throw new RecyclingBinException("Bin is not a RecyclingBin Class type");
+        }
+
+        this.bin = (RecyclingBin) iBin;
         this.distance = distance;
         this.duration = duration;
     }
@@ -18,7 +29,7 @@ public class Path implements IPath {
 
     @Override
     public IRecyclingBin getTo() {
-        return this.to;
+        return this.bin;
     }
 
     @Override
@@ -34,7 +45,7 @@ public class Path implements IPath {
     @Override
     public String toString() {
         return "Path{" +
-                "to=" + binId +
+                "to=" + bin.getCode() +
                 ", distance=" + distance +
                 ", duration=" + duration +
                 '}';
@@ -52,8 +63,8 @@ public class Path implements IPath {
 
         Path path = (Path) o;
 
-        return path.getTo().equals(this.binId) &&
-                path.getDistance() == this.distance &&
-                path.getDuration() == this.duration;
+        return this.bin.equals(path.getTo()) &&
+                this.distance == path.getDistance() &&
+                this.duration == path.getDuration();
     }
 }

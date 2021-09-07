@@ -8,18 +8,14 @@ import java.time.LocalDateTime;
 
 public class Measurement implements IMeasurement {
 
-    private double value;
-    private LocalDateTime time;
-    private int id;
-    private IContainer container;
-    private IRecyclingBin recyclingBin;
+    private final String containerId;
+    private final LocalDateTime time;
+    private final double value;
 
-    public Measurement(double value, LocalDateTime time, int id, IContainer container, IRecyclingBin recyclingBin) {
-        this.value = value;
+    public Measurement(String containerId, LocalDateTime time, double value) {
+        this.containerId = containerId;
         this.time = time;
-        this.id = id;
-        this.container = container;
-        this.recyclingBin = recyclingBin;
+        this.value = value;
     }
 
     @Override

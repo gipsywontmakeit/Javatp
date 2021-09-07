@@ -14,18 +14,16 @@ import java.util.Arrays;
 
 public class City implements ICity {
 
-    private String name;
-    private IRecyclingBin[] irb;
-    private IMeasurement[] im;
-    private int binCont = 0;
+    private final String name;
 
-    private static int MAX_RECYCLING_BIN_ARRAY = 10;
-
+    private IRecyclingBin[] bins;
+    private int binsSize = 10;
+    private int binsIndex = 0;
 
     public City(String name) {
         this.name = name;
+        this.bins = new IRecyclingBin[this.binsSize];
     }
-
 
     @Override
     public String getName() {
@@ -35,75 +33,102 @@ public class City implements ICity {
     @Override
     public boolean addRecyclingBin(IRecyclingBin recyclingBin) throws RecyclingBinException {
 
-        if (this.binCont == this.irb.length) {
-            this.addRecyclingBinArray();
-        }
-
         if (recyclingBin == null) {
             throw new RecyclingBinException("RecyclingBin is null!");
         }
 
-        if (recyclingBin.getCode().length() != 10) {
-            throw new RecyclingBinException("That RecyclingBin code is not valid. Please insert a new one.");
+        if (binExists(recyclingBin)) {
+            return false;
         }
 
-        RecyclingBin tempArray = (RecyclingBin) recyclingBin;
+        if (this.binsIndex == this.binsSize) {
+            expandRecyclingBin();
+        }
+
+        this.bins[this.binsIndex++] = recyclingBin;
 
         return true;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
-    public boolean addMeasurement(IMeasurement iMeasurement, IContainer iContainer) throws ContainerException, MeasurementException {
+    public boolean addMeasurement(IMeasurement measurement, IContainer dummyContainer) throws MeasurementException {
+
+        if (measurement == null) {
+            throw new MeasurementException("Measurement is null!");
+        }
+
+        //percorre as bins depois o "container compara com o getCode do de cima ^^^^^^^^
+        for (int i = 0; i < this.binsIndex; i++) {
+            IContainer[] containers = this.bins[i].getContainers();
+
+            for (int j = 0; j < containers.length; j++) {
+
+                if (containers[j] == null) {
+                    continue; // [C, C, C, C, C, C, null, C, C, C, NULL, C, C]
+                }
+
+                //Porque quero aceder ao equals do container e não do objeto
+                Container container = (Container) containers[j];
+                // Comparar o containerId (container) com o containerId do DummyContainer
+                if (container.equals(dummyContainer)) {
+                    return container.addMeasurement(measurement);
+                }
+            }
+        }
+
         return false;
     }
 
     @Override
     public IRecyclingBin[] getRecyclingBin() {
-        return this.irb;
+        return this.bins;
     }
 
     @Override
     public IMeasurement[] getMeasurements(IRecyclingBin iRecyclingBin, WasteType wasteType) {
         /**
-        IMeasurement[] typeOfMeasurement;
-        int sizeOfArray = 0;
+         IMeasurement[] typeOfMeasurement;
+         int sizeOfArray = 0;
 
-        for (int j = 0; j < irb.length; j++) {
-            for (int i = 0; i < im.length; i++) {
-                try {
-                    if (irb[j].getContainer(wt) == im[i].getContainer()) {
-                        sizeOfArray++;
-                    }
-                } catch (ContainerException ex) {
-                    System.out.println("An error has occurred, quitting...");
-                }
-            }
-        }
+         for (int j = 0; j < irb.length; j++) {
+         for (int i = 0; i < im.length; i++) {
+         try {
+         if (irb[j].getContainer(wt) == im[i].getContainer()) {
+         sizeOfArray++;
+         }
+         } catch (ContainerException ex) {
+         System.out.println("An error has occurred, quitting...");
+         }
+         }
+         }
 
-        typeOfMeasurement = new IMeasurement[sizeOfArray];
+         typeOfMeasurement = new IMeasurement[sizeOfArray];
 
-        for (int j = 0; j < irb.length; j++) {
+         for (int j = 0; j < irb.length; j++) {
 
-            for (int i = 0; i < im.length; i++) {
+         for (int i = 0; i < im.length; i++) {
 
-                try {
-                    if (irb[j].getContainer(wt) == im[i].getContainer()) {
-                        for (int k = 0; k < typeOfMeasurement.length; k++) {
-                            if (typeOfMeasurement[k] == null) {
-                                typeOfMeasurement[k] = im[i];
-                            }
-                        }
-                    }
-                } catch (ContainerException ex) {
-                    System.out.println("An error occurred, quitting...");
-                }
+         try {
+         if (irb[j].getContainer(wt) == im[i].getContainer()) {
+         for (int k = 0; k < typeOfMeasurement.length; k++) {
+         if (typeOfMeasurement[k] == null) {
+         typeOfMeasurement[k] = im[i];
+         }
+         }
+         }
+         } catch (ContainerException ex) {
+         System.out.println("An error occurred, quitting...");
+         }
 
 
-            }
-        }
+         }
+         }
 
-        return typeOfMeasurement;
-        **/
+         return typeOfMeasurement;
+         **/
 
         return null;
     }
@@ -122,18 +147,39 @@ public class City implements ICity {
     // Linha 166 DummyContainer Importer.java
     public IContainer findContainerById(String containerId) {
 
-        IRecyclingBin[] tempArray = new IRecyclingBin[binCont + 10];
-
-        for(int i = 0; i < MAX_RECYCLING_BIN_ARRAY; i++) {
-            tempArray[i] = irb[i];
+        for (int i = 0; i < this.binsIndex; i++) {
+            IContainer[] containers = this.bins[i].getContainers();
+            for (int j = 0; j < containers.length; j++) {
+                if (containers[j] != null && containers[j].getCode().equals(containerId)) {
+                    return containers[j];
+                }
+            }
         }
 
-        MAX_RECYCLING_BIN_ARRAY = tempArray.length;
-        irb = tempArray;
-
+        return null;
     }
 
+    private void expandRecyclingBin() {
+        IRecyclingBin[] resizedArray = new IRecyclingBin[binsSize *= 2];
 
+        for (int i = 0; i < this.binsIndex; i++) {
+            resizedArray[i] = this.bins[i];
+        }
+
+        this.bins = resizedArray;
+    }
+
+    public boolean binExists(IRecyclingBin iRecyclingBin) {
+        RecyclingBin bin = (RecyclingBin) iRecyclingBin;
+
+        for (int i = 0; i < this.binsIndex; i++) {
+            if (bin.equals(this.bins[i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 }
 

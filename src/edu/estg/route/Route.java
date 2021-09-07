@@ -16,13 +16,6 @@ public class Route implements IRoute {
     }
 
     @Override
-    public IRecyclingBin[] getRoute(double v, double v1, double v2, double v3)
-
-
-    return new IRecyclingBin[0];
-    }
-
-    @Override
     public IRecyclingBin[] getRoute(double kilometersLimit, double durationLimit, double percentageCriteria, double maxCapacity) {
         return new IRecyclingBin[0];
     }
@@ -35,11 +28,6 @@ public class Route implements IRoute {
     @Override
     public double getTotalDuration(IRecyclingBin[] iRecyclingBins) {
         return this.totalDuration;
-    }
-
-    @Override
-    public String export() throws IOException {
-        return null;
     }
 
     @Override
