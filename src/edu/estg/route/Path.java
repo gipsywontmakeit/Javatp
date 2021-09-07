@@ -15,6 +15,7 @@ public class Path implements IPath {
         this.duration = duration;
     }
 
+
     @Override
     public IRecyclingBin getTo() {
         return this.to;

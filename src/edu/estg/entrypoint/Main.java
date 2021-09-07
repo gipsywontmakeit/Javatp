@@ -5,10 +5,9 @@ import edu.estg.container.Measurement;
 import edu.estg.container.RecyclingBin;
 import edu.estg.json.Importer;
 import edu.estg.route.City;
+import edu.maen.core.enumerations.WasteType;
 import edu.maen.core.exceptions.CityException;
-import edu.maen.core.interfaces.IContainer;
-import edu.maen.core.interfaces.IMeasurement;
-import edu.maen.core.interfaces.IRecyclingBin;
+import edu.maen.core.interfaces.*;
 
 import java.io.IOException;
 
@@ -19,7 +18,11 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         //Main.storageManagement.menu();
+        ICity city = new City("Felgueiras");
+
         testDriveFn();
+        displayAllBins(city);
+
     }
 
     public static void testDriveFn() throws Exception {
@@ -64,5 +67,39 @@ public class Main {
                 System.out.println("***************************************\n");
             }
         }
+
+
+
+    }
+
+    public static void displayAllBins(ICity iCity) {
+        IRecyclingBin[] recyclingBins = iCity.getRecyclingBin();
+
+        for (int i = 0; i < recyclingBins.length; i++) {
+            System.out.println("fodeu");
+            if (recyclingBins[i] != null) {
+                System.out.println("|---------------------------------------------|");
+                System.out.println("Codigo: " + recyclingBins[i].getCode());
+                System.out.println("Ref. Localização: " + recyclingBins[i].getRefLocal());
+                System.out.println("Zona: " + recyclingBins[i].getZone());
+                System.out.println("Latitude: " + recyclingBins[i].getCoordinates().getLatitude());
+                System.out.println("Longitude: " + recyclingBins[i].getCoordinates().getLongitude());
+
+                IContainer[] iContainers = recyclingBins[i].getContainers();
+                System.out.println("Contentores: " + recyclingBins[i].getCode());
+
+                for(int j = 0; j < iContainers.length; j++) {
+                    if (iContainers[j] != null) {
+                        System.out.println(" codigo: " + iContainers[j].getCode());
+                        System.out.println(" tipo: " + WasteType.getUnitString(iContainers[j].getType()));
+                        System.out.println(" capacidade(kg): " + iContainers[j].getCapacity());
+                    }
+                }
+
+            }
+
+        }
+
+
     }
 }

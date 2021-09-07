@@ -4,12 +4,14 @@ import edu.estg.container.Container;
 import edu.estg.container.Measurement;
 import edu.estg.container.RecyclingBin;
 import edu.estg.route.GeographicCoordinates;
+import edu.estg.route.Path;
 import edu.maen.core.enumerations.WasteType;
 import edu.maen.core.exceptions.CityException;
 import edu.maen.core.exceptions.ContainerException;
 import edu.maen.core.exceptions.MeasurementException;
 import edu.maen.core.exceptions.RecyclingBinException;
 import edu.maen.core.interfaces.ICity;
+import edu.maen.core.interfaces.IRecyclingBin;
 import edu.maen.io.interfaces.IImporter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,6 +21,7 @@ import org.json.simple.parser.ParseException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Importer implements IImporter {
 

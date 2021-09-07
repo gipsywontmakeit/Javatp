@@ -133,7 +133,10 @@ public class RecyclingBin implements IRecyclingBin {
                 }
             }
         }
-        return false;
+
+        this.paths[this.pathIndex++] = path;
+
+        return true;
     }
 
     @Override
@@ -201,10 +204,12 @@ public class RecyclingBin implements IRecyclingBin {
     }
 
     public boolean pathExists(IPath iPath) {
-
+        Path path = (Path) iPath;
 
         for (int i = 0; i < this.pathIndex; i++) {
-            if (this.paths[i].
+            if (path.equals(this.paths[i])) {
+                return true;
+            }
         }
 
 
