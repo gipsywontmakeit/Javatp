@@ -34,18 +34,18 @@ public class Importer implements IImporter {
                 return FileType.DISTANCES_FILE;
             }
 
-            if (jsonObject.containsKey("contentor") &
-                    jsonObject.containsKey("data") &
+            if (jsonObject.containsKey("contentor") &&
+                    jsonObject.containsKey("data") &&
                     jsonObject.containsKey("valor")
             ) {
                 return FileType.MEASUREMENTS_FILE;
             }
 
-            if (jsonObject.containsKey("Codigo") &
-                    jsonObject.containsKey("Ref. Localização") &
-                    jsonObject.containsKey("Zona") &
-                    jsonObject.containsKey("Latitude") &
-                    jsonObject.containsKey("Longitude") &
+            if (jsonObject.containsKey("Codigo") &&
+                    jsonObject.containsKey("Ref. Localização") &&
+                    jsonObject.containsKey("Zona") &&
+                    jsonObject.containsKey("Latitude") &&
+                    jsonObject.containsKey("Longitude") &&
                     jsonObject.containsKey("Contentores")
             ) {
                 return FileType.BINS_FILE;
@@ -171,8 +171,7 @@ public class Importer implements IImporter {
         return true;
     }
 
-
-    private boolean importMeasurements(ICity city, JSONArray readingData) throws ContainerException, MeasurementException {
+    private void importMeasurements(ICity city, JSONArray readingData) throws ContainerException, MeasurementException {
         for (Object o : readingData) {
             JSONObject jsonObject = (JSONObject) o;
 
@@ -230,21 +229,25 @@ public class Importer implements IImporter {
                 }
                 break;
             case DISTANCES_FILE:
+                if (!this.isBinsFileImported) {
+                    throw new IOException("Bins file must be imported first!");
+                }
+
                 try {
-                    boolean imported = importDistances(city, jsonArray);
+                    importDistances(city, jsonArray);
+                    isDistancesFileImported = true;
                 } catch (RecyclingBinException e) {
                     throw new IOException(e.toString());
                 }
                 break;
             case MEASUREMENTS_FILE:
-                try {
-                    boolean imported = importMeasurements(city, jsonArray);
-                } catch (ContainerException | MeasurementException e) {
-                    throw new IOException(e.toString());
+                if (!this.isBinsFileImported) {
+                    throw new IOException("Bins file must be imported first!");
                 }
                 break;
             case UNDETECTED:
                 throw new IOException("Invalid File");
+
         }
     }
 

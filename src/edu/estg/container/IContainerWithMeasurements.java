@@ -11,4 +11,3 @@ interface IContainerWithMeasurements extends IContainer {
     public boolean addMeasurement(IMeasurement measurement) throws MeasurementException;
 }
 
-// eu reparei :P

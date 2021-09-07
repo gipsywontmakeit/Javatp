@@ -6,7 +6,11 @@ public class Vehicle implements IVehicle {
     private final String model;
     private final double maxCapacity;
 
-
+    /**
+     * @param brand
+     * @param model
+     * @param maxCapacity
+     */
     Vehicle(String brand, String model, double maxCapacity) {
         this.brand = brand;
         this.model = model;
@@ -28,4 +32,12 @@ public class Vehicle implements IVehicle {
         return this.maxCapacity;
     }
 
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "brand='" + brand + '\'' +
+                ", model='" + model + '\'' +
+                ", maxCapacity=" + maxCapacity +
+                '}';
+    }
 }

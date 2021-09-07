@@ -81,7 +81,7 @@ public class RecyclingBin implements IRecyclingBin {
             return false;
         }
 
-        // Expandinr o array
+        // Expandir o array
         if (this.containerSize == this.containerIndex) {
             // A capacidade esgotou
             expandContainerArray();

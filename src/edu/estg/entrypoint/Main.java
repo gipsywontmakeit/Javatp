@@ -31,7 +31,7 @@ public class Main {
 
         Importer jsonImporter = new Importer();
         try {
-            jsonImporter.importData(city, "D:\\Javatp\\resources\\ecopontos.json");
+            jsonImporter.importData(city, "jso");
         } catch (IOException | CityException e) {
             throw new Exception(e.toString());
         }
