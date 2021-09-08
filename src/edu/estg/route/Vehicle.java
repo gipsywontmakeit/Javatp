@@ -18,15 +18,39 @@ public class Vehicle implements IVehicle {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof Vehicle)) {
+            return false;
+        }
+
+        Vehicle vehicle = (Vehicle) o;
+
+        return vehicle.brand.equals(this.brand) && vehicle.model.equals(this.model);
+    }
+
+    /**
+     * @return
+     */
+    @Override
     public String getBrand() {
         return this.brand;
     }
 
+    /**
+     * @return
+     */
     @Override
     public String getModel() {
         return this.model;
     }
 
+    /**
+     * @return
+     */
     @Override
     public double getMaxCapacity() {
         return this.maxCapacity;

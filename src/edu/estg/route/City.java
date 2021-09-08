@@ -20,16 +20,30 @@ public class City implements ICity {
     private int binsSize = 10;
     private int binsIndex = 0;
 
+    /**
+     *
+     * @param name
+     */
     public City(String name) {
         this.name = name;
         this.bins = new IRecyclingBin[this.binsSize];
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return this.name;
     }
 
+    /**
+     *
+     * @param recyclingBin
+     * @return
+     * @throws RecyclingBinException
+     */
     @Override
     public boolean addRecyclingBin(IRecyclingBin recyclingBin) throws RecyclingBinException {
 
@@ -82,11 +96,21 @@ public class City implements ICity {
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public IRecyclingBin[] getRecyclingBin() {
         return this.bins;
     }
 
+    /**
+     *
+     * @param iRecyclingBin
+     * @param wasteType
+     * @return
+     */
     @Override
     public IMeasurement[] getMeasurements(IRecyclingBin iRecyclingBin, WasteType wasteType) {
         /**
@@ -133,6 +157,10 @@ public class City implements ICity {
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "City{" +
@@ -143,8 +171,15 @@ public class City implements ICity {
                 '}';
     }
 
+
     // TODO Para Apagar depois
     // Linha 166 DummyContainer Importer.java
+
+    /**
+     *
+     * @param containerId
+     * @return
+     */
     public IContainer findContainerById(String containerId) {
 
         for (int i = 0; i < this.binsIndex; i++) {
@@ -159,6 +194,9 @@ public class City implements ICity {
         return null;
     }
 
+    /**
+     *
+     */
     private void expandRecyclingBin() {
         IRecyclingBin[] resizedArray = new IRecyclingBin[binsSize *= 2];
 
@@ -169,6 +207,11 @@ public class City implements ICity {
         this.bins = resizedArray;
     }
 
+    /**
+     *
+     * @param iRecyclingBin
+     * @return
+     */
     public boolean binExists(IRecyclingBin iRecyclingBin) {
         RecyclingBin bin = (RecyclingBin) iRecyclingBin;
 

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+
 public class Importer implements IImporter {
 
     public boolean isBinsFileImported = false;
@@ -79,7 +80,7 @@ public class Importer implements IImporter {
         return null;
     }
 
-    private boolean importDistances(ICity city, JSONArray binData) throws RecyclingBinException {
+    private void importDistances(ICity city, JSONArray binData) throws RecyclingBinException {
         for (Object o : binData) {
             JSONObject jsonObject = (JSONObject) o;
 
@@ -122,7 +123,7 @@ public class Importer implements IImporter {
         }
     }
 
-    private boolean importBins(ICity city, JSONArray binData) throws RecyclingBinException, ContainerException {
+    private void importBins(ICity city, JSONArray binData) throws RecyclingBinException, ContainerException {
         for (Object o : binData) {
             JSONObject jsonObject = (JSONObject) o;
 
@@ -198,6 +199,12 @@ public class Importer implements IImporter {
         }
     }
 
+    /**
+     * @param city
+     * @param path
+     * @throws IOException
+     * @throws CityException
+     */
     @Override
     public void importData(ICity city, String path) throws IOException, CityException {
 
@@ -259,6 +266,10 @@ public class Importer implements IImporter {
         }
     }
 
+    /**
+     * @param s
+     * @throws IOException
+     */
     @Override
     public void report(String s) throws IOException {
     }

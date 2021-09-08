@@ -11,6 +11,13 @@ public class Path implements IPath {
     private final int distance;
     private final int duration;
 
+    /**
+     *
+     * @param iBin
+     * @param distance
+     * @param duration
+     * @throws RecyclingBinException
+     */
     public Path(IRecyclingBin iBin, int distance, int duration) throws RecyclingBinException {
 
         if (iBin == null) {
@@ -26,22 +33,37 @@ public class Path implements IPath {
         this.duration = duration;
     }
 
-
+    /**
+     *
+     * @return
+     */
     @Override
     public IRecyclingBin getTo() {
         return this.bin;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int getDistance() {
         return this.distance;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public int getDuration() {
         return this.duration;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "Path{" +
@@ -51,6 +73,11 @@ public class Path implements IPath {
                 '}';
     }
 
+    /**
+     *
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (o == this) {
