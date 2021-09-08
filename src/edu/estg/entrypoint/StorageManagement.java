@@ -1,17 +1,17 @@
 package edu.estg.entrypoint;
 
+import edu.estg.json.Importer;
+import edu.maen.core.exceptions.CityException;
+import edu.maen.core.interfaces.ICity;
+
+import java.io.IOException;
 import java.util.Scanner;
 
-public class StorageManagement implements IMenu {
+public class StorageManagement {
 
+    private static final Importer jsonImporter = new Importer();
 
-    @Override
-    public void display() {
-
-    }
-
-    @Override
-    public void menu() {
+    public static void menu(ICity city) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("|---------------------------------------------|");
@@ -22,7 +22,7 @@ public class StorageManagement implements IMenu {
 
         while (true) {
             System.out.print("--> ");
-            int op = scanner.nextInt();
+            String op = scanner.nextLine();
 
             if (op.equals("1")) {
                 System.out.println("|-----------------------------------------------|");
@@ -50,9 +50,9 @@ public class StorageManagement implements IMenu {
                 break;
             } else if (op.equals("2")) {
                 System.out.println("Program Terminated...");
-                break;
+                System.exit(0);
             } else {
-                System.out.println("Invalid Choice! Please chose a number between 1 and 2\n");
+                System.out.println("Invalid Choice! Please chose a number between 1 and 2");
             }
         }
     }

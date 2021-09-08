@@ -25,6 +25,10 @@ import java.time.format.DateTimeFormatter;
 
 public class Importer implements IImporter {
 
+    public boolean isBinsFileImported = false;
+    public static boolean isDistancesFileImported = false;
+    public static boolean isMeasurementsFileImported = false;
+
     private FileType detectFileType(JSONArray jsonArray) {
 
         for (Object o : jsonArray) {
@@ -116,8 +120,6 @@ public class Importer implements IImporter {
                 }
             }
         }
-
-        return true;
     }
 
     private boolean importBins(ICity city, JSONArray binData) throws RecyclingBinException, ContainerException {
@@ -167,8 +169,6 @@ public class Importer implements IImporter {
                 throw new RecyclingBinException("Cannot add bin");
             }
         }
-
-        return true;
     }
 
     private void importMeasurements(ICity city, JSONArray readingData) throws ContainerException, MeasurementException {
@@ -196,8 +196,6 @@ public class Importer implements IImporter {
                 throw new MeasurementException("Cannot Add Measurement -> " + dummyContainer.getCode());
             }
         }
-
-        return true;
     }
 
     @Override
@@ -223,10 +221,12 @@ public class Importer implements IImporter {
         switch (detectFileType(jsonArray)) {
             case BINS_FILE:
                 try {
-                    boolean imported = importBins(city, jsonArray);
+                    importBins(city, jsonArray);
+                    this.isBinsFileImported = true;
                 } catch (RecyclingBinException | ContainerException e) {
                     throw new IOException(e.toString());
                 }
+
                 break;
             case DISTANCES_FILE:
                 if (!this.isBinsFileImported) {
@@ -239,10 +239,18 @@ public class Importer implements IImporter {
                 } catch (RecyclingBinException e) {
                     throw new IOException(e.toString());
                 }
+
                 break;
             case MEASUREMENTS_FILE:
                 if (!this.isBinsFileImported) {
                     throw new IOException("Bins file must be imported first!");
+                }
+
+                try {
+                    importMeasurements(city, jsonArray);
+                    isMeasurementsFileImported = true;
+                } catch (ContainerException | MeasurementException e) {
+                    throw new IOException(e.toString());
                 }
                 break;
             case UNDETECTED:
